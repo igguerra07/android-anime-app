@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import androidx.fragment.app.Fragment
+import br.com.igguerra.animeapp.ui.fragment.AnimeFavsListFragment
 import br.com.igguerra.animeapp.ui.fragment.AnimeListFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.IllegalArgumentException
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         mainBottomNav.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_item_animes -> openFragment(AnimeListFragment())
-                R.id.menu_item_favs -> openFragment(Fragment())
+                R.id.menu_item_favs -> openFragment(AnimeFavsListFragment())
                 else -> throw IllegalArgumentException("Fragment class not found")
             }
             return@setOnNavigationItemSelectedListener true

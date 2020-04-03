@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import br.com.igguerra.animeapp.R
+import br.com.igguerra.animeapp.model.AnimeItem
 import br.com.igguerra.animeapp.model.AnimeResponse
 import br.com.igguerra.animeapp.network.Status
 import br.com.igguerra.animeapp.ui.viewmodel.AnimeViewModel
@@ -23,12 +24,25 @@ import kotlinx.android.synthetic.main.item_anime.*
 class AnimeDetailsFragment : DialogFragment() {
 
     private var animeId: Int = -1
-
+    private lateinit var animeItem: AnimeItem
+    private var isFav: AnimeItem? = null
     private val viewModel by lazy {
         ViewModelProvider(
             this,
             ViewModelFactory()
         ).get(AnimeViewModel::class.java)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel.animeFavs.observe(viewLifecycleOwner, Observer {
+            isFav = it.find { animeItem -> animeItem.mal_id == animeId }
+            if (isFav != null) {
+                animeDetailsTextButton.text = ("Remover Favoritos")
+            } else {
+                animeDetailsTextButton.text = ("Adicionar Favoritos")
+            }
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +51,7 @@ class AnimeDetailsFragment : DialogFragment() {
 
         arguments?.let {
             animeId = it.getInt(ANIME_ID)
+            animeItem = it.getParcelable(ANIME_ITEM)!!
         }
         viewModel.anime.observe(activity!!, Observer {
             when (it.status) {
@@ -70,6 +85,24 @@ class AnimeDetailsFragment : DialogFragment() {
         //
         animeDetailsBackButton.setOnClickListener {
             this.dismiss()
+        }
+
+        animeDetailsCardButton.setOnClickListener {
+            viewModel.deleteAnime(animeItem)
+            if (isFav != null) {
+                Toast.makeText(
+                    requireContext(),
+                    "O anime ${animeItem.title} foi removido aos favoritos",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                viewModel.addAnime(animeItem)
+                Toast.makeText(
+                    requireContext(),
+                    "O anime ${animeItem.title} foi adicionado dos favoritos",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -127,12 +160,14 @@ class AnimeDetailsFragment : DialogFragment() {
 
     companion object {
         private const val ANIME_ID = "ANIME_ID"
+        private const val ANIME_ITEM = "ANIME_ITEM"
 
         @JvmStatic
-        fun newInstance(id: Int) =
+        fun newInstance(id: Int, animeItem: AnimeItem) =
             AnimeDetailsFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ANIME_ID, id)
+                    putParcelable(ANIME_ITEM, animeItem)
                 }
             }
     }
