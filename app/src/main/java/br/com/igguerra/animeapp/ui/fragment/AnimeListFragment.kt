@@ -118,6 +118,7 @@ class AnimeListFragment : BaseFragment(), CoroutineScope {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_toolbar, menu)
 
         val menuItem = menu.findItem(R.id.menu_item_search)
         val searchView = menuItem?.actionView as SearchView

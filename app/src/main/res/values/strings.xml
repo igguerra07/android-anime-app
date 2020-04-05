@@ -30,5 +30,6 @@
     <!-- Errors Messages -->
     <string name="error_title_ops">Ops!</string>
     <string name="error_operation_invalid">"Ops!, Não foi possível realizar a operação"</string>
+    <string name="desc_splash_screen">Splash Screen</string>
 
 </resources>

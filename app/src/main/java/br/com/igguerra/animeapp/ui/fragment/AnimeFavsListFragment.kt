@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.igguerra.animeapp.R
 import br.com.igguerra.animeapp.application.BaseFragment
+import br.com.igguerra.animeapp.application.Constants
 import br.com.igguerra.animeapp.model.Anime
 import br.com.igguerra.animeapp.ui.adapter.AnimeAdapter
 import br.com.igguerra.animeapp.ui.viewmodel.AnimeViewModel
@@ -48,7 +49,9 @@ class AnimeFavsListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Setup recyclerview
-        favsAdapter = AnimeAdapter(favs) {}
+        favsAdapter = AnimeAdapter(favs) {
+            AnimeDetailsFragment.newInstance(it).show(parentFragmentManager, Constants.FRAG_FAVS_TAG)
+        }
         animeFavsList.layoutManager = LinearLayoutManager(requireContext())
         animeFavsList.adapter = favsAdapter
     }
