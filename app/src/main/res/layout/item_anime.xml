@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="6.9"
+                tools:text="6.9"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -64,7 +64,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="TV Series"
                 android:textColor="@android:color/white"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -91,6 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
+                android:contentDescription="@string/desc_anime_cover"
                 app:srcCompat="@drawable/ic_launcher_background" />
 
         </androidx.cardview.widget.CardView>
@@ -102,21 +102,19 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="Título do Anime"
+            tools:text="Título do Anime"
             android:textColor="@android:color/black"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/animePosterContent"
-            app:layout_constraintTop_toBottomOf="@+id/animeTypeBadge"
-            tools:text="Título do Anime" />
+            app:layout_constraintTop_toBottomOf="@+id/animeTypeBadge" />
 
         <TextView
             android:id="@+id/animeEpisodes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:text="64 Episodes"
             app:layout_constraintBottom_toBottomOf="@+id/animePosterContent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_chainStyle="spread_inside"

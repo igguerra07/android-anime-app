@@ -1,5 +1,6 @@
 package br.com.igguerra.animeapp.ui.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
@@ -7,64 +8,65 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
-import android.widget.Toast
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import br.com.igguerra.animeapp.R
-import br.com.igguerra.animeapp.model.AnimeItem
+import br.com.igguerra.animeapp.application.BaseDialogFragment
+import br.com.igguerra.animeapp.model.Anime
 import br.com.igguerra.animeapp.model.AnimeResponse
 import br.com.igguerra.animeapp.network.Status
 import br.com.igguerra.animeapp.ui.viewmodel.AnimeViewModel
-import br.com.igguerra.animeapp.ui.viewmodel.ViewModelFactory
+import br.com.igguerra.animeapp.utils.AppExtensions.toastShow
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_anime_details.*
-import kotlinx.android.synthetic.main.item_anime.*
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class AnimeDetailsFragment : DialogFragment() {
+class AnimeDetailsFragment : BaseDialogFragment() {
 
-    private var animeId: Int = -1
-    private lateinit var animeItem: AnimeItem
-    private var isFav: AnimeItem? = null
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this,
-            ViewModelFactory()
-        ).get(AnimeViewModel::class.java)
-    }
+    private val animeViewModel: AnimeViewModel by sharedViewModel()
+
+    private lateinit var anime: Anime
+
+    private var isFav: Anime? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel.animeFavs.observe(viewLifecycleOwner, Observer {
-            isFav = it.find { animeItem -> animeItem.mal_id == animeId }
+
+        // Request anime details
+        animeViewModel.getAnimeById(anime.mal_id)
+
+        animeViewModel.animeFavs.observe(viewLifecycleOwner, Observer {
+            isFav = it.find { anime -> anime.mal_id == this.anime.mal_id }
             if (isFav != null) {
-                animeDetailsTextButton.text = ("Remover Favoritos")
+                animeDetailsAddButton.text = getString(R.string.remove_favs)
             } else {
-                animeDetailsTextButton.text = ("Adicionar Favoritos")
+                animeDetailsAddButton.text = getString(R.string.add_favs)
+            }
+        })
+
+        animeViewModel.anime.observe(viewLifecycleOwner, Observer {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    setLoadingState(false)
+                    setDetails(it.data!!)
+                }
+                Status.LOADING -> {
+                    setLoadingState(true)
+                }
+                Status.ERROR   ->  {
+                    context?.toastShow(it.message?:getString(R.string.error_operation_invalid))
+                    dismiss()
+                }
             }
         })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, R.style.AppTheme)
-
+        // Get params
         arguments?.let {
-            animeId = it.getInt(ANIME_ID)
-            animeItem = it.getParcelable(ANIME_ITEM)!!
+            anime = it.getParcelable(ANIME_ITEM)!!
         }
-        viewModel.anime.observe(activity!!, Observer {
-            when (it.status) {
-                Status.LOADING -> setLoadingState(true)
-                Status.SUCCESS -> {
-                    setLoadingState(false)
-                    setDetails(it.data!!)
-                }
-                Status.ERROR -> {
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
-                }
-            }
-        })
     }
 
     override fun onCreateView(
@@ -77,98 +79,75 @@ class AnimeDetailsFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //
-        dialog?.window?.attributes?.windowAnimations = R.style.DialogAnimation
-        //
-        viewModel.getAnimeById(animeId)
 
-        //
         animeDetailsBackButton.setOnClickListener {
             this.dismiss()
         }
 
-        animeDetailsCardButton.setOnClickListener {
-            viewModel.deleteAnime(animeItem)
+        animeDetailsAddButton.setOnClickListener {
+            animeViewModel.deleteAnime(anime)
             if (isFav != null) {
-                Toast.makeText(
-                    requireContext(),
-                    "O anime ${animeItem.title} foi removido aos favoritos",
-                    Toast.LENGTH_SHORT
-                ).show()
+                context?.toastShow(getString(R.string.msg_remove_favs, anime.title))
             } else {
-                viewModel.addAnime(animeItem)
-                Toast.makeText(
-                    requireContext(),
-                    "O anime ${animeItem.title} foi adicionado dos favoritos",
-                    Toast.LENGTH_SHORT
-                ).show()
+                animeViewModel.addAnime(anime)
+                context?.toastShow(getString(R.string.msg_add_favs, anime.title))
             }
         }
     }
 
-    /**
-     *
-     * @param anime
-     */
+    @SuppressLint("SetJavaScriptEnabled")
     private fun setDetails(anime: AnimeResponse) {
         anime.let {
-            animeDetailsScoreValue.text = it.score.toString()
-            animeDetailsFans.text = ("${it.favorites} Fans")
-            animeDetailsEpisodes.text = ("${it.episodes} episodes")
-            animeDetailsDesc.text = it.synopsis
+            animeDetailsScore.text = it.score.toString()
+            animeDetailsFans.text = getString(R.string.fans_count, it.favorites)
+            animeDetailsEpisodes.text = getString(R.string.episodes_count, it.episodes)
+            animeDetailsDescription.text = it.synopsis
             animeDetailsTitle.text = it.title
-            animeDetailsDesc.movementMethod = ScrollingMovementMethod()
+            animeDetailsDescription.movementMethod = ScrollingMovementMethod()
             Picasso.get().load(it.image_url).placeholder(R.drawable.ic_launcher_background)
                 .into(animeDetailsPoster)
 
             //TODO Change for YoutubeAPI
-            animeTrailerView.settings.javaScriptEnabled = true
-            animeTrailerView.settings.pluginState = WebSettings.PluginState.ON
-            animeTrailerView.loadUrl(it.trailer_url)
-            animeTrailerView.webChromeClient = WebChromeClient()
+            animeDetailsTrailer.settings.javaScriptEnabled = true
+            animeDetailsTrailer.settings.pluginState = WebSettings.PluginState.ON
+            animeDetailsTrailer.loadUrl(it.trailer_url)
+            animeDetailsTrailer.webChromeClient = WebChromeClient()
         }
     }
 
-    /**
-     *
-     * @param isLoading
-     */
     private fun setLoadingState(isLoading: Boolean) {
         val isVisible = if (isLoading) View.VISIBLE else View.INVISIBLE
-        shimmerLoadingCotent.visibility = isVisible
-        shimmerTitle.visibility = isVisible
-        shimmerInfo.visibility = isVisible
-
-        shimmerLoadingCotent.showShimmer(isLoading)
-        shimmerInfo.showShimmer(isLoading)
-        shimmerTitle.showShimmer(isLoading)
+        animeDetailsShimmerDesc.visibility = isVisible
+        animeDetailsShimmerTitle.visibility = isVisible
+        animeDetailsShimmerInfo.visibility = isVisible
+        // Animation
+        animeDetailsShimmerDesc.showShimmer(isLoading)
+        animeDetailsShimmerInfo.showShimmer(isLoading)
+        animeDetailsShimmerTitle.showShimmer(isLoading)
     }
 
     override fun onResume() {
         super.onResume()
-        shimmerLoadingCotent.startShimmer()
-        shimmerInfo.startShimmer()
-        shimmerTitle.startShimmer()
+        animeDetailsShimmerDesc.startShimmer()
+        animeDetailsShimmerInfo.startShimmer()
+        animeDetailsShimmerTitle.startShimmer()
     }
 
     override fun onPause() {
         super.onPause()
-        shimmerLoadingCotent.stopShimmer()
-        shimmerInfo.stopShimmer()
-        shimmerTitle.stopShimmer()
+        animeDetailsShimmerDesc.stopShimmer()
+        animeDetailsShimmerInfo.stopShimmer()
+        animeDetailsShimmerTitle.stopShimmer()
     }
 
     companion object {
-        private const val ANIME_ID = "ANIME_ID"
         private const val ANIME_ITEM = "ANIME_ITEM"
-
         @JvmStatic
-        fun newInstance(id: Int, animeItem: AnimeItem) =
-            AnimeDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ANIME_ID, id)
-                    putParcelable(ANIME_ITEM, animeItem)
-                }
+        fun newInstance(anime: Anime) =
+        AnimeDetailsFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(ANIME_ITEM, anime)
             }
+        }
     }
 }

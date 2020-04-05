@@ -5,300 +5,282 @@
     android:id="@+id/animeDetailsLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:background="@drawable/background_app"
-    android:elevation="0dp">
+    android:background="@drawable/background_app">
 
-    <ImageView
+    <ImageButton
         android:id="@+id/animeDetailsBackButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:background="?selectableItemBackgroundBorderless"
-        android:padding="16dp"
+        android:contentDescription="@string/desc_back_button"
+        android:padding="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/abc_vector_test" />
+        app:srcCompat="@drawable/ic_back" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/animeDetailsCard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guidelineContentPosition">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/animeDetailsCardContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineInfoPosition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.15" />
+
+            <TextView
+                android:id="@+id/animeDetailsTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/white"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/animeDetailsScoreContent"
+                app:layout_constraintStart_toEndOf="@+id/animeDetailsPosterContent"
+                app:layout_constraintTop_toTopOf="@+id/guidelineInfoPosition"
+                tools:text="Título do Anime" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/animeDetailsScoreContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:clipToPadding="false"
+                app:cardBackgroundColor="@color/colorPrimary"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="24dp"
+                app:cardMaxElevation="24dp"
+                app:contentPadding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/animeDetailsTitle">
+
+                <TextView
+                    android:id="@+id/animeDetailsScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:maxLength="4"
+                    android:text="@string/placeholder_score"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    tools:text="0.00" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/animeDetailsEpisodes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@+id/animeDetailsFans"
+                app:layout_constraintStart_toStartOf="@+id/animeDetailsTitle"
+                app:layout_constraintTop_toBottomOf="@+id/animeDetailsTitle"
+                tools:text="1000 episodes" />
+
+            <TextView
+                android:id="@+id/animeDetailsFans"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@+id/animeDetailsTitle"
+                app:layout_constraintStart_toEndOf="@+id/animeDetailsEpisodes"
+                app:layout_constraintTop_toTopOf="@+id/animeDetailsEpisodes"
+                tools:text="12345678 fans" />
+
+            <TextView
+                android:id="@+id/animeDetailsScoreLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/score"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="@+id/animeDetailsScoreContent"
+                app:layout_constraintStart_toStartOf="@+id/animeDetailsScoreContent"
+                app:layout_constraintTop_toBottomOf="@+id/animeDetailsScoreContent" />
+
+            <TextView
+                android:id="@+id/animeDetailsDescription"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:scrollbars="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/animeDetailsAddButton"
+                app:layout_constraintEnd_toEndOf="@+id/animeDetailsScoreLabel"
+                app:layout_constraintStart_toStartOf="@+id/animeDetailsPosterContent"
+                app:layout_constraintTop_toBottomOf="@+id/animeDetailsPosterContent"
+                tools:text="O Naruto pode ser um pouco duro às vezes, talvez você não saiba disso, mas o Naruto também cresceu sem pai. Na verdade ele nunca conheceu nenhum de seus pais, e nunca teve nenhum amigo em nossa aldeia. Mesmo assim eu nunca vi ele chorar, ficar zangado ou se dar por vencido, ele está sempre disposto a melhorar, ele quer ser respeitado, é o sonho dele e o Naruto daria a vida por isso sem hesitar. Meu palpite é que ele se cansou de chorar e decidiu fazer alguma coisa a respeito!" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/animeDetailsPosterContent"
+                android:layout_width="80dp"
+                android:layout_height="100dp"
+                android:layout_marginStart="16dp"
+                android:clipToPadding="false"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="24dp"
+                app:cardMaxElevation="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/animeDetailsTitle">
+
+                <ImageView
+                    android:id="@+id/animeDetailsPoster"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/desc_anime_cover"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@drawable/ic_launcher_background" />
+            </androidx.cardview.widget.CardView>
+
+            <Button
+                android:id="@+id/animeDetailsAddButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/background_outline_button"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/add_favs"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/animeDetailsShimmerTitle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@android:color/white"
+                android:elevation="99dp"
+                app:layout_constraintBottom_toBottomOf="@+id/animeDetailsTitle"
+                app:layout_constraintEnd_toEndOf="@+id/animeDetailsTitle"
+                app:layout_constraintStart_toStartOf="@+id/animeDetailsTitle"
+                app:layout_constraintTop_toTopOf="@+id/animeDetailsTitle"
+                app:shimmer_auto_start="true">
+
+                <LinearLayout
+                    android:id="@+id/animeDetailsShimmerTitleContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <include layout="@layout/item_placeholder_text_content" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/animeDetailsShimmerInfo"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@android:color/white"
+                android:elevation="99dp"
+                app:layout_constraintBottom_toBottomOf="@+id/animeDetailsEpisodes"
+                app:layout_constraintEnd_toEndOf="@+id/animeDetailsFans"
+                app:layout_constraintStart_toStartOf="@+id/animeDetailsEpisodes"
+                app:layout_constraintTop_toTopOf="@+id/animeDetailsEpisodes"
+                app:shimmer_auto_start="true">
+
+                <LinearLayout
+                    android:id="@+id/animeDetailsShimmerInfoContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <include layout="@layout/item_placeholder_text_content" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/animeDetailsShimmerDesc"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@android:color/white"
+                android:elevation="99dp"
+                app:layout_constraintBottom_toBottomOf="@+id/animeDetailsDescription"
+                app:layout_constraintEnd_toEndOf="@+id/animeDetailsDescription"
+                app:layout_constraintStart_toStartOf="@+id/animeDetailsDescription"
+                app:layout_constraintTop_toTopOf="@+id/animeDetailsDescription"
+                app:shimmer_auto_start="true">
+
+                <LinearLayout
+                    android:id="@+id/animeDetailsShimmerDescContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <include layout="@layout/item_placeholder_text" />
+
+                    <include layout="@layout/item_placeholder_text" />
+
+                    <include layout="@layout/item_placeholder_text" />
+
+                    <include layout="@layout/item_placeholder_text" />
+
+                    <include layout="@layout/item_placeholder_text" />
+
+                    <include layout="@layout/item_placeholder_text_content" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/animesDetailsGuideline"
+        android:id="@+id/guidelineContentPosition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.3" />
 
-    <TextView
-        android:id="@+id/animeDetailsTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:elevation="99dp"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/animeDetailsScoreBadge"
-        app:layout_constraintStart_toEndOf="@+id/animeDetailsPosterContent"
-        app:layout_constraintTop_toTopOf="@+id/animeDetailsPosterContent" />
-
-    <TextView
-        android:id="@+id/animeDetailsDesc"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:elevation="99dp"
-        android:ellipsize="end"
-        android:focusable="true"
-        android:scrollbars="vertical"
-        android:textSize="16sp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/animeDetailsCardButton"
-        app:layout_constraintEnd_toEndOf="@+id/animeDetailsScoreBadge"
-        app:layout_constraintStart_toStartOf="@+id/animeDetailsPosterContent"
-        app:layout_constraintTop_toBottomOf="@+id/animeDetailsPosterContent" />
-
-
-    <TextView
-        android:id="@+id/animeDetailsEpisodes"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:elevation="99dp"
-        app:layout_constraintEnd_toStartOf="@+id/animeDetailsFans"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="@+id/animeDetailsTitle"
-        app:layout_constraintTop_toBottomOf="@+id/animeDetailsTitle" />
-
-    <TextView
-        android:id="@+id/animeDetailsFans"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:elevation="99dp"
-        app:layout_constraintEnd_toStartOf="@+id/animeDetailsScoreBadge"
-        app:layout_constraintStart_toEndOf="@+id/animeDetailsEpisodes"
-        app:layout_constraintTop_toTopOf="@+id/animeDetailsEpisodes" />
-
-    <TextView
-        android:id="@+id/animeDetailsScoreLabel"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineTrailerBottomPosition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:elevation="99dp"
-        android:text="Score"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="@+id/animeDetailsScoreBadge"
-        app:layout_constraintStart_toStartOf="@+id/animeDetailsScoreBadge"
-        app:layout_constraintTop_toBottomOf="@+id/animeDetailsScoreBadge" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.40" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/animeDetailsCardContent"
+        android:id="@+id/animeDetailsTrailerContent"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
-        android:elevation="1dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:clipToPadding="false"
         app:cardCornerRadius="16dp"
         app:cardElevation="24dp"
-        app:cardMaxElevation="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardMaxElevation="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineTrailerBottomPosition"
+        app:layout_constraintDimensionRatio="w,1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/animesDetailsGuideline"
-        app:layout_constraintVertical_bias="1.0">
-
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/animeBackgroundContent"
-        android:layout_width="335dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="32dp"
-        android:elevation="8dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="25dp"
-        app:cardMaxElevation="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="h,1:1"
-        app:layout_constraintEnd_toEndOf="@+id/animeDetailsCardContent"
-        app:layout_constraintStart_toStartOf="@+id/animeDetailsCardContent"
-        app:layout_constraintTop_toBottomOf="@+id/animeDetailsBackButton"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@+id/animeDetailsBackButton">
 
         <WebView
-            android:id="@+id/animeTrailerView"
+            android:id="@+id/animeDetailsTrailer"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
     </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/animeDetailsPosterContent"
-        android:layout_width="80dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="16dp"
-        android:elevation="99dp"
-        app:cardElevation="25dp"
-        app:cardMaxElevation="16dp"
-        app:layout_constraintStart_toStartOf="@+id/animeBackgroundContent"
-        app:layout_constraintTop_toBottomOf="@+id/animeBackgroundContent">
-
-        <ImageView
-            android:id="@+id/animeDetailsPoster"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:elevation="99dp"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_launcher_background" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/animeDetailsCardButton"
-        android:layout_width="wrap_content"
-        android:layout_height="36dp"
-        android:layout_marginBottom="24dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?selectableItemBackground"
-        app:cardBackgroundColor="@color/colorPrimary"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="25dp"
-        app:cardMaxElevation="16dp"
-        app:cardUseCompatPadding="false"
-        app:contentPaddingBottom="8dp"
-        app:contentPaddingLeft="16dp"
-        app:contentPaddingRight="16dp"
-        app:contentPaddingTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/animeDetailsCardContent"
-        app:layout_constraintEnd_toEndOf="@+id/animeDetailsCardContent"
-        app:layout_constraintStart_toStartOf="@+id/animeDetailsCardContent">
-
-        <TextView
-            android:id="@+id/animeDetailsTextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Adicionar Favoritos"
-            android:textAllCaps="true"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/animeDetailsScoreBadge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/colorPrimary"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="25dp"
-        app:cardMaxElevation="16dp"
-        app:contentPadding="4dp"
-        app:layout_constraintEnd_toEndOf="@+id/animeBackgroundContent"
-        app:layout_constraintTop_toTopOf="@+id/animeDetailsPosterContent">
-
-        <TextView
-            android:id="@+id/animeDetailsScoreValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0.00"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
-    </androidx.cardview.widget.CardView>
-
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerTitle"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:elevation="99dp"
-        app:layout_constraintBottom_toTopOf="@+id/animeDetailsFans"
-        app:layout_constraintEnd_toEndOf="@+id/animeDetailsTitle"
-        app:layout_constraintStart_toStartOf="@+id/animeDetailsTitle"
-        app:layout_constraintTop_toTopOf="@+id/animeDetailsTitle">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/colorPrimary" />
-        </LinearLayout>
-    </com.facebook.shimmer.ShimmerFrameLayout>
-
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerInfo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:elevation="99dp"
-        app:layout_constraintBottom_toBottomOf="@+id/animeDetailsEpisodes"
-        app:layout_constraintEnd_toStartOf="@+id/animeDetailsScoreBadge"
-        app:layout_constraintStart_toStartOf="@+id/animeDetailsEpisodes"
-        app:layout_constraintTop_toTopOf="@+id/animeDetailsEpisodes"
-        app:layout_constraintVertical_bias="1.0">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="16dp"
-                android:background="@color/colorPrimary" />
-        </LinearLayout>
-    </com.facebook.shimmer.ShimmerFrameLayout>
-
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerLoadingCotent"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:elevation="99dp"
-        app:layout_constraintBottom_toBottomOf="@+id/animeDetailsDesc"
-        app:layout_constraintEnd_toEndOf="@+id/animeDetailsDesc"
-        app:layout_constraintStart_toStartOf="@+id/animeDetailsDesc"
-        app:layout_constraintTop_toTopOf="@+id/animeDetailsDesc"
-        app:shimmer_auto_start="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="16dp"
-                android:background="@color/colorPrimary" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="16dp"
-                android:layout_marginTop="4dp"
-                android:background="@color/colorPrimary" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="16dp"
-                android:layout_marginTop="4dp"
-                android:background="@color/colorPrimary" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="16dp"
-                android:layout_marginTop="4dp"
-                android:background="@color/colorPrimary" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="4dp"
-                android:background="@color/colorPrimary" />
-        </LinearLayout>
-    </com.facebook.shimmer.ShimmerFrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

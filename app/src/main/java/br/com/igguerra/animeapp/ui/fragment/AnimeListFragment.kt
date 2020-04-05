@@ -2,87 +2,80 @@ package br.com.igguerra.animeapp.ui.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.igguerra.animeapp.R
-import br.com.igguerra.animeapp.model.AnimeItem
+import br.com.igguerra.animeapp.application.BaseFragment
+import br.com.igguerra.animeapp.application.Constants
+import br.com.igguerra.animeapp.model.Anime
 import br.com.igguerra.animeapp.network.Status
 import br.com.igguerra.animeapp.ui.adapter.AnimeAdapter
 import br.com.igguerra.animeapp.ui.viewmodel.AnimeViewModel
-import br.com.igguerra.animeapp.ui.viewmodel.ViewModelFactory
+import br.com.igguerra.animeapp.utils.AppExtensions.changeTitle
 import kotlinx.android.synthetic.main.fragment_anime_list.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.coroutines.CoroutineContext
 
+class AnimeListFragment : BaseFragment(), CoroutineScope {
 
-class AnimeListFragment : Fragment(), CoroutineScope{
+    private val animeViewModel: AnimeViewModel by sharedViewModel()
 
-    val fullData: ArrayList<AnimeItem> = arrayListOf()
-
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this,
-            ViewModelFactory()
-        ).get(AnimeViewModel::class.java)
-    }
-    private val itemList: ArrayList<AnimeItem> = arrayListOf()
     private lateinit var animeAnimeAdapter: AnimeAdapter
+
+    private val list: ArrayList<Anime> = arrayListOf()
+    private val reset: ArrayList<Anime> = arrayListOf()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setHasOptionsMenu(true)
         // Setup observable
-        viewModel.topList.observe(viewLifecycleOwner, Observer {
+        animeViewModel.topList.observe(viewLifecycleOwner, Observer {
             when (it.status) {
                 Status.LOADING -> {
-                    animesLoading.visibility = View.VISIBLE
+                    animesLayout.isRefreshing = true
                     animeListCardError.visibility = View.GONE
                 }
                 Status.SUCCESS -> {
+                    animesLayout.isRefreshing = false
                     animeListCardError.visibility = View.GONE
-                    animesLoading.visibility = View.GONE
-                    fullData.clear()
-                    fullData.addAll(it.data?.top?: arrayListOf())
-                    itemList.clear()
-                    itemList.addAll(it.data?.top?: arrayListOf())
-                    updateDataSet(animeList)
+                    reset.clear()
+                    reset.addAll(it.data?.top ?: arrayListOf())
+                    updateDataSet(it.data?.top, animeList)
                 }
                 Status.ERROR -> {
-                    animesLoading.visibility = View.GONE
+                    animesLayout.isRefreshing = false
                     animeListCardError.visibility = View.VISIBLE
                     animeListError.text = it.message
                 }
             }
         })
 
-        viewModel.searchResult.observe(viewLifecycleOwner, Observer {
+        animeViewModel.searchResult.observe(viewLifecycleOwner, Observer {
             when (it.status) {
                 Status.LOADING -> {
-                    animeList.visibility = View.INVISIBLE
-                    animesLoading.visibility = View.VISIBLE
+                    animesLayout.isRefreshing = true
                     animeListCardError.visibility = View.GONE
                 }
                 Status.SUCCESS -> {
-                    animeList.visibility = View.VISIBLE
+                    animesLayout.isRefreshing = false
                     animeListCardError.visibility = View.GONE
-                    animesLoading.visibility = View.GONE
-                    itemList.clear()
-                    itemList.addAll(it.data!!.results)
-                    updateDataSet(animeList)
+                    updateDataSet(it.data?.results, animeList)
                 }
                 Status.ERROR -> {
-                    animesLoading.visibility = View.GONE
-                    animeList.visibility = View.VISIBLE
+                    animesLayout.isRefreshing = false
                     animeListCardError.visibility = View.VISIBLE
                     animeListError.text = it.message
                 }
@@ -95,79 +88,84 @@ class AnimeListFragment : Fragment(), CoroutineScope{
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        changeTitle(getString(R.string.title_top))
         return inflater.inflate(R.layout.fragment_anime_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Setup RecyclerView
-        animeAnimeAdapter = AnimeAdapter(itemList) {
-            AnimeDetailsFragment.newInstance(it.mal_id, it)
-                .show(fragmentManager!!, "DIALOG_FRAGMENT_DETAILS")
+        animeAnimeAdapter = AnimeAdapter(list) {
+            AnimeDetailsFragment.newInstance(it)
+                .show(parentFragmentManager, Constants.FRAG_FAVS_TAG)
         }
         animeList.layoutManager = LinearLayoutManager(requireContext())
         animeList.adapter = animeAnimeAdapter
 
-        // Request Top Animes
-        viewModel.getTopAnimes()
-
         // Retry request animes
         animeListRetryButton.setOnClickListener {
-            viewModel.getTopAnimes()
+            animeViewModel.getTopAnimes()
+        }
+
+        //Styling progress
+        animesLayout.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary)
+
+        // Set progress event
+        animesLayout.setOnRefreshListener {
+            animeViewModel.getTopAnimes()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        val menuItem = menu.findItem(R.id.menu_item_search)
-        val search = menuItem.actionView as SearchView
-        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            var searchFor = ""
-            override fun onQueryTextSubmit(query: String?): Boolean {
 
-                search.clearFocus()
+        val menuItem = menu.findItem(R.id.menu_item_search)
+        val searchView = menuItem?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            private var searchFor = ""
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                searchView.clearFocus()
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                if(searchFor === newText) return false
-                searchFor = newText?:""
+                if (newText == searchFor) return true
+                searchFor = newText!!
                 launch {
-                    delay(300)
-                    if (searchFor != newText) return@launch
-                    if(searchFor.isNotEmpty() && searchFor.length >= 3) {
-                        viewModel.searchAnime(searchFor)
+                    delay(600)
+                    if (newText != searchFor) return@launch
+                    if (searchFor.length >= 3) {
+                        animeViewModel.searchAnime(newText)
                     } else {
-                        if (fullData != itemList) {
-                            itemList.clear()
-                            itemList.addAll(fullData)
-                            updateDataSet(animeList)
+                        if(reset != list) {
+                            updateDataSet(reset, animeList)
                         }
-
                     }
                 }
                 return true
             }
-
-
         })
-        search.setOnCloseListener {
-            if (fullData != itemList) {
-                itemList.clear()
-                itemList.addAll(fullData)
-                updateDataSet(animeList)
-            }
-            search.clearFocus()
+
+        searchView.setOnCloseListener {
+            searchView.clearFocus()
             return@setOnCloseListener false
         }
     }
 
-    private fun updateDataSet(recyclerView: RecyclerView) {
+
+    private fun updateDataSet(anime: List<Anime>?, recyclerView: RecyclerView) {
         val context: Context = recyclerView.context
         val controller: LayoutAnimationController =
             AnimationUtils.loadLayoutAnimation(context, R.anim.layout_anim_fall_down)
+        // updates items
+        list.clear()
+        list.addAll(anime ?: arrayListOf())
+
+        // updates adapter
         recyclerView.layoutAnimation = controller
-        recyclerView.adapter!!.notifyDataSetChanged()
+        recyclerView.adapter?.notifyDataSetChanged()
         recyclerView.scheduleLayoutAnimation()
     }
 

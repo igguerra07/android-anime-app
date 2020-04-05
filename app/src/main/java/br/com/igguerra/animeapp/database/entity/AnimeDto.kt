@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "animes")
-class Anime(
+class AnimeDto(
     @PrimaryKey
     val id: Int,
     val episodes: Int,

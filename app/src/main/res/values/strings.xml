@@ -4,6 +4,31 @@
     <string name="favs_text">Favoritos</string>
     <string name="animes_text">Animes</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Contents description -->
+    <string name="desc_anime_cover">Poster do anime</string>
+    <string name="desc_back_button">Botão de voltar</string>
+
+    <!-- Fragment's Title -->
+    <string name="title_favs">Seus favoritos</string>
+    <string name="title_top">Top Animes</string>
+
+    <!-- Placeholders -->
+    <string name="placeholder_score">0.00</string>
+
+    <!-- Labels -->
+    <string name="add_favs">Adicionar aos favoritos</string>
+    <string name="remove_favs">Remover do favoritos</string>
+    <string name="fans_count">%d fans</string>
+    <string name="episodes_count">%d episodes</string>
+    <string name="try_again">Tentar novamente</string>
+    <string name="score">Score</string>
+
+    <!-- Feedback Messages -->
+    <string name="msg_add_favs">"O anime %s foi adicionados aos favoritos"</string>
+    <string name="msg_remove_favs">"O anime %s foi removido dos favoritos"</string>
+
+    <!-- Errors Messages -->
+    <string name="error_title_ops">Ops!</string>
+    <string name="error_operation_invalid">"Ops!, Não foi possível realizar a operação"</string>
+
 </resources>
